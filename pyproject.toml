@@ -1,0 +1,30 @@
+[project]
+name = "jev-playground"
+version = "0.1.0"
+description = "TypeSafe AI Jev の挙動を架空データのシナリオで検証するプレイグラウンド"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.12"
+dependencies = [
+    "typesafe-sdk>=0.7.2",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+jev-playground = "jev_playground.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+    "pre-commit>=4.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/jev_playground"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

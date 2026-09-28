@@ -1,0 +1,16 @@
+# 秘密情報（API キー）
+.env
+.env.*
+!.env.example
+
+# 実行結果（生レスポンス）。架空データ由来でも公開しない
+results/
+
+# 公開してはいけない語の一覧（この一覧自体が機密になるためローカル専用）
+.sensitive-denylist.txt
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/

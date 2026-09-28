@@ -1,0 +1,108 @@
+# 汎用のサポート問い合わせ分類シナリオ
+#
+# 概要: 架空の SaaS「サンプル家計簿アプリ」への問い合わせを、
+#       種類（choice）・緊急度（score）・人へのエスカレーション要否（noul）で判定する。
+# 取り扱い: 本文はすべて架空の合成データ。実在の人物・企業・問い合わせは含めない。
+#           人名・連絡先が必要な場合は README の「使ってよい例示用の値」だけを使う。
+
+scenarioId: support-triage
+description: 架空の SaaS への問い合わせを、種類・緊急度・エスカレーション要否で判定する
+model: jev-latest
+confidenceThreshold: 0.7
+
+questions:
+  topic:
+    type: choice
+    instructions: この問い合わせの主な用件はどれですか？
+    criteria:
+      billing: 料金・請求・支払い・返金に関すること
+      bug: アプリの不具合・エラー・想定外の動作
+      account: ログイン・パスワード・アカウント設定・退会
+      feature: 新機能の要望・改善提案
+      other: 上記のどれにも当てはまらない
+
+  severity:
+    type: score
+    instructions: この問い合わせの緊急度とリスクはどの程度ですか？
+    criteria:
+      - 急ぎではない（要望・感想・一般的な質問）
+      - 通常（困っているが回避策がある）
+      - 高い（主要機能が使えない、または金銭的な不利益が出ている）
+      - 緊急（データ消失・不正利用・多数の利用者に影響）
+
+  escalate:
+    type: noul
+    instructions: この問い合わせは、自動返信ではなく直ちに人の担当者が対応すべきですか？
+    criteria:
+      "true": 人の担当者がすぐに対応すべき
+      "false": 定型の自動返信やヘルプ記事の案内で足りる
+
+cases:
+  - caseId: double-charge
+    state: 今月の利用料が2回引き落とされています。明細を確認したら同じ金額が2行ありました。1回分を返金してほしいです。
+    expected:
+      topic: billing
+      severity: 2
+      escalate: true
+
+  - caseId: plan-price-question
+    state: 年払いプランにすると月払いよりどのくらい安くなりますか？検討中です。
+    expected:
+      topic: billing
+      severity: 0
+      escalate: false
+
+  - caseId: crash-on-export
+    state: CSV 書き出しボタンを押すとアプリが毎回落ちます。再起動しても同じです。書き出し以外は普通に使えています。
+    expected:
+      topic: bug
+      severity: 1
+      escalate: false
+
+  - caseId: data-missing
+    state: アップデート後に過去3年分の記録がすべて消えています。バックアップも見当たりません。至急確認してください。
+    expected:
+      topic: bug
+      severity: 3
+      escalate: true
+
+  - caseId: password-reset
+    state: パスワードを忘れてしまいました。再設定の方法を教えてください。
+    expected:
+      topic: account
+      severity: 0
+      escalate: false
+
+  - caseId: suspicious-login
+    state: 心当たりのない端末からログインされた通知が来ました。設定も勝手に変わっています。乗っ取られたかもしれません。
+    expected:
+      topic: account
+      severity: 3
+      escalate: true
+
+  - caseId: dark-mode-request
+    state: 夜に使うことが多いので、ダークモードがあると嬉しいです。
+    expected:
+      topic: feature
+      severity: 0
+      escalate: false
+
+  - caseId: widget-request
+    state: ホーム画面のウィジェットで今月の残り予算を見られるようにしてほしいです。毎回アプリを開くのが手間です。
+    expected:
+      topic: feature
+      severity: 0
+      escalate: false
+
+  - caseId: thanks-message
+    state: いつも便利に使わせてもらっています。これからも応援しています。
+    expected:
+      topic: other
+      severity: 0
+      escalate: false
+
+  - caseId: ambiguous-sync
+    state: スマホで入れた記録がパソコン側に出てきません。昨日までは同期できていたと思います。有料プランなのに困ります。
+    expected:
+      topic: bug
+      severity: 2

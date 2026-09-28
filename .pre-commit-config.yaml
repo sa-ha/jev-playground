@@ -1,0 +1,27 @@
+# コミット前・push 前に、秘密情報と個人情報が入っていないか検査する。
+# 有効化: uv run pre-commit install
+default_install_hook_types: [pre-commit, pre-push]
+
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
+        stages: [pre-commit]
+
+  - repo: local
+    hooks:
+      - id: check-sensitive-staged
+        name: 個人情報・機密情報チェック（コミットするファイル）
+        entry: uv run python scripts/check_sensitive.py --check-git-config
+        language: system
+        pass_filenames: true
+        stages: [pre-commit]
+
+      - id: check-sensitive-all
+        name: 個人情報・機密情報チェック（全ファイルと全コミット）
+        entry: uv run python scripts/check_sensitive.py --all --check-authors
+        language: system
+        pass_filenames: false
+        always_run: true
+        stages: [pre-push]
