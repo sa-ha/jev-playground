@@ -20,7 +20,7 @@
 
 制限事項:
     - 正規表現による検出のため、表記ゆれ（全角数字、空白区切りの電話番号など）は見逃すことがある。
-      最終的な確認は README の「push 前の手動確認」で人が行う。
+      最終的な確認は docs/public-repository-policy.md の「push 前の手動確認」で人が行う。
     - 拒否リストは公開できない語（社名・案件名・本名など）を入れるため、リポジトリには含めない。
     - 1MB を超えるファイルと、NUL 文字を含むバイナリファイルは検査しない（その旨を表示する）。
 """
@@ -429,7 +429,7 @@ def main(argv: list[str] | None = None) -> int:
     print("check_sensitive: 公開してはいけない可能性のある情報が見つかりました。", file=sys.stderr)
     for finding in findings:
         print(f"  {finding.location}: {finding.kind}: {finding.maskedValue}", file=sys.stderr)
-    print("README の「公開リポジトリとしての取り扱い」を確認し、値を例示用のものに置き換えてください。", file=sys.stderr)
+    print("docs/public-repository-policy.md を確認し、値を例示用のものに置き換えてください。", file=sys.stderr)
     return 1
 
 
